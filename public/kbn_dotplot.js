@@ -60,7 +60,7 @@ function DotplotVisTypeProvider(Private) {
     schemas: new Schemas([
       {
         group: 'metrics',
-        name: 'metric',
+        name: 'x-axis',
         title: 'X-Axis',
         aggFilter: '!geo_centroid',
         min: 1,
@@ -68,7 +68,7 @@ function DotplotVisTypeProvider(Private) {
       },
       {
         group: 'metrics',
-        name: 'metric',
+        name: 'y-axis',
         title: 'Y-Axis',
         aggFilter: '!geo_centroid',
         min: 1,
@@ -76,7 +76,7 @@ function DotplotVisTypeProvider(Private) {
       },
       {
         group: 'buckets',
-        name: 'term',
+        name: 'field',
         title: 'Field',
         max: 1,
         min: 1,

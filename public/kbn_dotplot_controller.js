@@ -19,14 +19,39 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
   $scope.$watchMulti(['esResponse', 'vis.params'], function ([resp]) {
 
     if(resp){
-      var firstFieldAggId = $scope.vis.aggs.bySchemaName['term'][0].id;
+
+      //Names of the field that have been selected
+      var firstFieldAggId = $scope.vis.aggs.bySchemaName['field'][0].id;
+      var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
+
+      // Retrieve the metrics aggregation configured
+      if($scope.vis.aggs.bySchemaName['x-axis']){
+          var metricsAgg_xAxis = $scope.vis.aggs.bySchemaName['x-axis'][0];
+          if($scope.vis.aggs.bySchemaName['x-axis'][0].type.name != "count"){
+            var metricsAgg_xAxis_name = $scope.vis.aggs.bySchemaName['x-axis'][0].params.field.displayName;
+          }else{
+            var metricsAgg_xAxis_name = ""
+          }
+          var metricsAgg_xAxis_title = $scope.vis.aggs.bySchemaName['x-axis'][0].type.title
+      }
+      if($scope.vis.aggs.bySchemaName['y-axis']){
+          var metricsAgg_yAxis = $scope.vis.aggs.bySchemaName['y-axis'][0];
+          if($scope.vis.aggs.bySchemaName['y-axis'][0].type.name != "count"){
+            var metricsAgg_yAxis_name = $scope.vis.aggs.bySchemaName['y-axis'][0].params.field.displayName;
+          }else{
+            var metricsAgg_yAxis_name = "";
+          }
+          var metricsAgg_yAxis_title = $scope.vis.aggs.bySchemaName['y-axis'][0].type.title
+      }
+
+
       var POP_TO_PX_SIZE = 2e5;
       var data = resp.aggregations[firstFieldAggId].buckets.map(function(bucket) {
         return {
           mode: 'markers',
           name: bucket.key,
-          x: [bucket.doc_count],
-          y: [bucket.doc_count],
+          x: [metricsAgg_xAxis.getValue(bucket)],
+          y: [metricsAgg_yAxis.getValue(bucket)],
           text: bucket.key,
           marker: {
               sizemode: 'diameter',
@@ -36,8 +61,8 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
         }
       });
       var layout = {
-        xaxis: {title: 'Count'},
-        yaxis: {title: 'Count', type: 'log'},
+        xaxis: {title: metricsAgg_xAxis_title + " " + metricsAgg_xAxis_name},
+        yaxis: {title: metricsAgg_yAxis_title + " " + metricsAgg_yAxis_name},//, type: 'log'},
         margin: {t: 20},
         hovermode: 'closest',
         showlegend: false,
