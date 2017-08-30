@@ -16,6 +16,8 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
 
   var Plotly = require('plotly.js/lib/core');
 
+  const randomColor = require('randomcolor');
+
   $scope.$watchMulti(['esResponse', 'vis.params'], function ([resp]) {
 
     if(resp){
@@ -23,6 +25,11 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
       //Names of the field that have been selected
       var firstFieldAggId = $scope.vis.aggs.bySchemaName['field'][0].id;
       var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
+      if($scope.vis.aggs.bySchemaName['field'][1]){
+        var secondFieldAggId = $scope.vis.aggs.bySchemaName['field'][1].id;
+        var secondfieldAggName = $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
+      }
+
 
       // Retrieve the metrics aggregation configured
       if($scope.vis.aggs.bySchemaName['x-axis']){
@@ -46,7 +53,30 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
 
 
       var POP_TO_PX_SIZE = 2e5;
-      var data = resp.aggregations[firstFieldAggId].buckets.map(function(bucket) {
+      var dataParsed = resp.aggregations[firstFieldAggId].buckets.map(function(bucket) {
+
+        //If two buckets selected
+        if(bucket[secondFieldAggId]){
+          var colorOrg = randomColor();
+          var aux = bucket[secondFieldAggId].buckets.map(function(buck) {
+            return {
+              mode: 'markers',
+              name: buck.key,
+              x: [metricsAgg_xAxis.getValue(buck)],
+              y: [metricsAgg_yAxis.getValue(buck)],
+              text: buck.key,
+              marker: {
+                  color: colorOrg,
+                  sizemode: 'diameter',
+                  size: 10,
+                  sizeref: POP_TO_PX_SIZE
+              }
+            }
+          })
+
+          return aux;
+        }
+        //If only one bucket selected
         return {
           mode: 'markers',
           name: bucket.key,
@@ -67,6 +97,11 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
         hovermode: 'closest',
         showlegend: false,
       };
+
+      var data = [];
+      for (var i = 0; i < dataParsed.length; i++) {
+        data = data.concat(dataParsed[i])
+      }
       Plotly.newPlot('my-graph', data, layout, {showLink: false})
     }
 

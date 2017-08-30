@@ -78,7 +78,7 @@ function DotplotVisTypeProvider(Private) {
         group: 'buckets',
         name: 'field',
         title: 'Field',
-        max: 1,
+        max: 2,
         min: 1,
         aggFilter: ['terms']
       }
