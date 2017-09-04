@@ -1,4 +1,4 @@
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 import DotplotVisParamsTemplate from 'plugins/kbn_dotplot/kbn_dotplot_params.html';
 
 uiModules.get('kibana/kbn_dotplot')

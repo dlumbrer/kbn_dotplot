@@ -2,7 +2,7 @@
   "name": "kbn_dotplot",
   "version": "5.5.0-1",
   "kibana": {
-    "version": "5.4.0"
+    "version": "5.5.0"
   },
   "authors": [
   "David Moreno Lumbreras <dmorenolumb@gmail.com>"
