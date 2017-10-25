@@ -75,6 +75,14 @@ function DotplotVisTypeProvider(Private) {
         max: 1
       },
       {
+        group: 'metrics',
+        name: 'dotsize',
+        title: 'Dot Size',
+        aggFilter: '!geo_centroid',
+        min: 1,
+        max: 1
+      },
+      {
         group: 'buckets',
         name: 'field',
         title: 'Field',
