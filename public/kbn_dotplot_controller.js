@@ -51,14 +51,52 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
           var metricsAgg_yAxis_title = $scope.vis.aggs.bySchemaName['y-axis'][0].type.title
       }
 
+      //Size
+      if($scope.vis.aggs.bySchemaName['dotsize']){
+        var radius_label = ""
+        var metricsAgg_radius = $scope.vis.aggs.bySchemaName['dotsize'][0]
 
-      var POP_TO_PX_SIZE = 2e5;
+        var radius_ratio = +metricsAgg_radius.vis.params.radiusRatio
+
+        if(metricsAgg_radius.params.customLabel) {
+          radius_label = metricsAgg_radius.params.customLabel
+        } else {
+
+          var metricsAgg_radius_title = metricsAgg_radius.type.title
+
+          if(metricsAgg_radius.type.name != "count"){
+            var metricsAgg_radius_name = metricsAgg_radius.params.field.displayName
+            radius_label = metricsAgg_radius_title + " " + metricsAgg_radius_name
+          }else{
+            radius_label = metricsAgg_radius_title
+          }
+        }
+      }
+
+
+      var defaultDotSize = 10
+      // compite size for single bucket
+      if(metricsAgg_radius) {
+        var firstBuketSized = resp.aggregations[firstFieldAggId].buckets.map(function (b) { return metricsAgg_radius.getValue(b) })
+        var max = Math.max(...firstBuketSized)
+        var min = Math.min(...firstBuketSized)
+        var chartMin = 10
+        var chartMax = 100
+        var step = max - min
+        var chartDiff = chartMax - chartMin
+      }
       var dataParsed = resp.aggregations[firstFieldAggId].buckets.map(function(bucket) {
 
         //If two buckets selected
         if(bucket[secondFieldAggId]){
           var colorOrg = randomColor();
           var aux = bucket[secondFieldAggId].buckets.map(function(buck) {
+
+            //Size
+            var size = defaultDotSize
+            if(metricsAgg_radius) {
+              size = ((metricsAgg_radius.getValue(buck) - min) / step) * chartDiff + chartMin
+            }
             return {
               mode: 'markers',
               name: buck.key,
@@ -68,8 +106,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
               marker: {
                   color: colorOrg,
                   sizemode: 'diameter',
-                  size: 10,
-                  sizeref: POP_TO_PX_SIZE
+                  size: size
               }
             }
           })
@@ -77,6 +114,10 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
           return aux;
         }
         //If only one bucket selected
+        var size = defaultDotSize
+        if(metricsAgg_radius) {
+          size = ((metricsAgg_radius.getValue(bucket) - min) / step) * chartDiff + chartMin
+        }
         return {
           mode: 'markers',
           name: bucket.key,
@@ -85,8 +126,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
           text: bucket.key,
           marker: {
               sizemode: 'diameter',
-              size: 10,
-              sizeref: POP_TO_PX_SIZE
+              size: size,
           }
         }
       });
@@ -102,35 +142,8 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
       for (var i = 0; i < dataParsed.length; i++) {
         data = data.concat(dataParsed[i])
       }
-      Plotly.newPlot('my-graph', data, layout, {showLink: false})
+      Plotly.newPlot('dotplot-graph', data, layout, {showLink: false})
     }
-
-    /*Plotly.d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv', function(err, rows){
-    var YEAR = 2007;
-    var continents = ['Asia', 'Europe', 'Africa', 'Oceania', 'Americas'];
-    var POP_TO_PX_SIZE = 2e5;
-    function unpack(rows, key) {
-    return rows.map(function(row) { return row[key]; });
-    }
-
-    var data = continents.map(function(continent) {
-    var rowsFiltered = rows.filter(function(row) {
-        return (row.continent === continent) && (+row.year === YEAR);
-    });
-    return {
-        mode: 'markers',
-        name: continent,
-        x: unpack(rowsFiltered, 'lifeExp'),
-        y: unpack(rowsFiltered, 'gdpPercap'),
-        text: unpack(rowsFiltered, 'country'),
-        marker: {
-            sizemode: 'area',
-            size: unpack(rowsFiltered, 'pop'),
-            sizeref: POP_TO_PX_SIZE
-        }
-    };
-  });*/
-    ;
 
   });
 });
