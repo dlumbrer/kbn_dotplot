@@ -18,14 +18,23 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
 
   const randomColor = require('randomcolor');
 
-  $scope.$watchMulti(['esResponse', 'vis.params'], function ([resp]) {
+  $scope.$watchMulti(['esResponse', 'vis.params.perPage'], function ([resp]) {
 
     if(resp){
-
+      var id_firstfield = '0'
+      var id_secondfield;
+      var id_x = '1'
+      var id_y = '2'
+      var id_size = '3'
+      var dicColor = {}
       //Names of the field that have been selected
       var firstFieldAggId = $scope.vis.aggs.bySchemaName['field'][0].id;
       var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
       if($scope.vis.aggs.bySchemaName['field'][1]){
+        id_secondfield = '1'
+        id_x = '2'
+        id_y = '3'
+        id_size = '4'
         var secondFieldAggId = $scope.vis.aggs.bySchemaName['field'][1].id;
         var secondfieldAggName = $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
       }
@@ -77,7 +86,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
       var defaultDotSize = 10
       // compite size for single bucket
       if(metricsAgg_radius) {
-        var firstBuketSized = resp.aggregations[firstFieldAggId].buckets.map(function (b) { return metricsAgg_radius.getValue(b) })
+        var firstBuketSized = resp.tables[0].rows.map(function (b) { return b[id_size] })
         var max = Math.max(...firstBuketSized)
         var min = Math.min(...firstBuketSized)
         var chartMin = 10
@@ -85,45 +94,48 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
         var step = max - min
         var chartDiff = chartMax - chartMin
       }
-      var dataParsed = resp.aggregations[firstFieldAggId].buckets.map(function(bucket) {
+      console.log(resp)
+      var dataParsed = resp.tables[0].rows.map(function(bucket) {
 
         //If two buckets selected
-        if(bucket[secondFieldAggId]){
-          var colorOrg = randomColor();
-          var aux = bucket[secondFieldAggId].buckets.map(function(buck) {
+        if(secondFieldAggId){
+          if (dicColor[bucket[id_firstfield]]){
+            var colorOrg = dicColor[bucket[id_firstfield]];
+          }else{
+            var colorOrg = randomColor();
+            dicColor[bucket[id_firstfield]] = colorOrg;
+          }
 
-            //Size
-            var size = defaultDotSize
-            if(metricsAgg_radius) {
-              size = ((metricsAgg_radius.getValue(buck) - min) / step) * chartDiff + chartMin
-            }
-            return {
-              mode: 'markers',
-              name: buck.key,
-              x: [metricsAgg_xAxis.getValue(buck)],
-              y: [metricsAgg_yAxis.getValue(buck)],
-              text: buck.key,
-              marker: {
-                  color: colorOrg,
-                  sizemode: 'diameter',
-                  size: size
-              }
-            }
-          })
 
-          return aux;
+          //Size
+          var size = defaultDotSize
+          if(metricsAgg_radius) {
+            size = ((bucket[id_size] - min) / step) * chartDiff + chartMin
+          }
+          return {
+            mode: 'markers',
+            name: bucket[id_secondfield],
+            x: [bucket[id_x]],
+            y: [bucket[id_y]],
+            text: bucket[id_secondfield],
+            marker: {
+                color: colorOrg,
+                sizemode: 'diameter',
+                size: size
+            }
+          }
         }
         //If only one bucket selected
         var size = defaultDotSize
         if(metricsAgg_radius) {
-          size = ((metricsAgg_radius.getValue(bucket) - min) / step) * chartDiff + chartMin
+          size = ((bucket[id_size] - min) / step) * chartDiff + chartMin
         }
         return {
           mode: 'markers',
-          name: bucket.key,
-          x: [metricsAgg_xAxis.getValue(bucket)],
-          y: [metricsAgg_yAxis.getValue(bucket)],
-          text: bucket.key,
+          name: bucket[id_firstfield],
+          x: [bucket[id_x]],
+          y: [bucket[id_y]],
+          text: bucket[id_firstfield],
           marker: {
               sizemode: 'diameter',
               size: size,
@@ -142,6 +154,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
       for (var i = 0; i < dataParsed.length; i++) {
         data = data.concat(dataParsed[i])
       }
+
       Plotly.newPlot('dotplot-graph', data, layout, {showLink: false})
     }
 
