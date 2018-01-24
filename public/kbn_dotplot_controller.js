@@ -94,7 +94,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
         var step = max - min
         var chartDiff = chartMax - chartMin
       }
-      console.log(resp)
+      //console.log(resp)
       var dataParsed = resp.tables[0].rows.map(function(bucket) {
 
         //If two buckets selected
@@ -155,7 +155,32 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
         data = data.concat(dataParsed[i])
       }
 
-      Plotly.newPlot('dotplot-graph', data, layout, {showLink: false})
+      var dotplot = document.getElementById('dotplot-graph');
+
+      Plotly.newPlot('dotplot-graph', data, layout, {showLink: false});
+
+      dotplot.on('plotly_click', function(data){
+      var name='';
+        for(var i=0; i < data.points.length; i++){
+          name = data.points[i].data.name;
+        };
+
+        if (name != null && name.length > 0) {
+            var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
+            if($scope.vis.aggs.bySchemaName['field'][1]){
+                fieldAggName =  $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
+            }
+            var match = {};
+            match[fieldAggName] = { "query": name, "type": "phrase" };
+            var filters = [
+              {
+                "query": { "match": match },
+                meta: { index: $scope.vis.indexPattern.id, negate: false, disabled: false }
+              }
+            ];
+            $scope.vis.API.queryFilter.addFilters(filters);
+        }
+        })
     }
 
   });
