@@ -8,7 +8,7 @@ import 'ui/agg_table/agg_table_group';
 
 import { CATEGORY } from 'ui/vis/vis_category';
 import { VisFactoryProvider } from 'ui/vis/vis_factory';
-import { VisSchemasProvider } from 'ui/vis/editors/default/schemas';
+import { Schemas } from 'ui/vis/editors/default/schemas';
 import DotplotVisTemplate from 'plugins/kbn_dotplot/kbn_dotplot.html';
 import DotplotVisParamsTemplate from 'plugins/kbn_dotplot/kbn_dotplot_params.html';
 import { VisTypesRegistryProvider } from 'ui/registry/vis_types';
@@ -27,7 +27,6 @@ VisTypesRegistryProvider.register(DotplotVisTypeProvider);
 // define the DotplotVisType
 function DotplotVisTypeProvider(Private) {
   const VisFactory = Private(VisFactoryProvider);
-  const Schemas = Private(VisSchemasProvider);
 
   // define the DotplotVisController which is used in the template
   // by angular's ng-controller directive
@@ -64,7 +63,10 @@ function DotplotVisTypeProvider(Private) {
           title: 'X-Axis',
           aggFilter: '!geo_centroid',
           min: 1,
-          max: 1
+          max: 1,
+          defaults: [
+            { type: 'count', schema: 'x-axis' }
+          ]
         },
         {
           group: 'metrics',
@@ -72,7 +74,10 @@ function DotplotVisTypeProvider(Private) {
           title: 'Y-Axis',
           aggFilter: '!geo_centroid',
           min: 1,
-          max: 1
+          max: 1,
+          defaults: [
+            { type: 'count', schema: 'y-axis' }
+          ]
         },
         {
           group: 'metrics',

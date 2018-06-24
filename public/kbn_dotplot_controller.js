@@ -1,4 +1,3 @@
-import { AggResponseTabifyProvider } from 'ui/agg_response/tabify/tabify';
 import { uiModules } from 'ui/modules';
 import { assign } from 'lodash';
 
@@ -9,8 +8,6 @@ const module = uiModules.get('kibana/kbn_dotplot', ['kibana']);
 // add a controller to tha module, which will transform the esResponse into a
 // tabular format that we can pass to the table directive
 module.controller('KbnDotplotVisController', function ($scope, $element, Private) {
-  const tabifyAggResponse = Private(AggResponseTabifyProvider);
-
   const uiStateSort = ($scope.uiState) ? $scope.uiState.get('vis.params.sort') : {};
   assign($scope.vis.params.sort, uiStateSort);
 
