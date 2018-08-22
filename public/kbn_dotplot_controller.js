@@ -8,7 +8,7 @@ const module = uiModules.get('kibana/kbn_dotplot', ['kibana']);
 
 // add a controller to tha module, which will transform the esResponse into a
 // tabular format that we can pass to the table directive
-module.controller('KbnDotplotVisController', function ($scope, $element, Private) {
+module.controller('KbnDotplotVisController', function ($scope, $element, $timeout, Private) {
   const tabifyAggResponse = Private(AggResponseTabifyProvider);
 
   const uiStateSort = ($scope.uiState) ? $scope.uiState.get('vis.params.sort') : {};
@@ -154,8 +154,9 @@ module.controller('KbnDotplotVisController', function ($scope, $element, Private
       for (var i = 0; i < dataParsed.length; i++) {
         data = data.concat(dataParsed[i])
       }
-
-      Plotly.newPlot('dotplot-graph', data, layout, {showLink: false})
+      $timeout(function () {
+        Plotly.newPlot('dotplot-graph_' + $scope.$id, data, layout, {showLink: false})
+      })
     }
 
   });
