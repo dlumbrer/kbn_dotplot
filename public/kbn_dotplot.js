@@ -63,7 +63,6 @@ function DotplotVisTypeProvider(Private) {
           name: 'x-axis',
           title: 'X-Axis',
           aggFilter: '!geo_centroid',
-          min: 1,
           max: 1
         },
         {
@@ -71,7 +70,6 @@ function DotplotVisTypeProvider(Private) {
           name: 'y-axis',
           title: 'Y-Axis',
           aggFilter: '!geo_centroid',
-          min: 1,
           max: 1
         },
         {
@@ -79,7 +77,6 @@ function DotplotVisTypeProvider(Private) {
           name: 'dotsize',
           title: 'Dot Size',
           aggFilter: '!geo_centroid',
-          min: 1,
           max: 1
         },
         {
@@ -88,7 +85,7 @@ function DotplotVisTypeProvider(Private) {
           title: 'Field',
           max: 2,
           min: 1,
-          aggFilter: ['terms']
+          aggFilter: ['terms', 'filters']
         }
       ])
     },
