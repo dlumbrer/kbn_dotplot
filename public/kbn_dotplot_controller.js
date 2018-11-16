@@ -29,14 +29,18 @@ module.controller('KbnDotplotVisController', function ($scope, $element, $timeou
       var dicColor = {}
       //Names of the field that have been selected
       var firstFieldAggId = $scope.vis.aggs.bySchemaName['field'][0].id;
-      var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
+      if ($scope.vis.aggs.bySchemaName['field'][0].params.field) {
+        var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
+      }
       if($scope.vis.aggs.bySchemaName['field'][1]){
         id_secondfield = '1'
         id_x = '2'
         id_y = '3'
         id_size = '4'
         var secondFieldAggId = $scope.vis.aggs.bySchemaName['field'][1].id;
-        var secondfieldAggName = $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
+        if ($scope.vis.aggs.bySchemaName['field'][1].params.field) {
+          var secondfieldAggName = $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
+        }
       }
 
 
