@@ -5,7 +5,7 @@
     "version": "kibana"
   },
   "authors": [
-  "David Moreno Lumbreras <dmorenolumb@gmail.com>"
+    "David Moreno Lumbreras <dmorenolumb@gmail.com>"
   ],
   "license": "Apache-2.0",
   "repository": {
@@ -15,6 +15,5 @@
   "dependencies": {
     "plotly.js": "1.29.3",
     "randomcolor": "0.5.0"
-
   }
 }

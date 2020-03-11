@@ -1,12 +1,7 @@
 import 'plugins/kbn_dotplot/kbn_dotplot.less';
-import 'plugins/kbn_dotplot/kbn_dotplot_controller';
 import 'plugins/kbn_dotplot/kbn_dotplot_params';
-import 'ui/agg_table';
-import 'ui/agg_table/agg_table_group';
-import 'ui/agg_table';
-import 'ui/agg_table/agg_table_group';
 
-import { CATEGORY } from 'ui/vis/vis_category';
+import { KbnDotplotVisController } from './kbn_dotplot_controller';
 import { VisFactoryProvider } from 'ui/vis/vis_factory';
 import { Schemas } from 'ui/vis/editors/default/schemas';
 import DotplotVisTemplate from 'plugins/kbn_dotplot/kbn_dotplot.html';
@@ -38,7 +33,6 @@ function DotplotVisTypeProvider(Private) {
     title: 'Dot plot',
     image,
     description: 'Display values in a dot plot',
-      category: CATEGORY.BASIC,
     visConfig: {
       defaults: {
         perPage: 10,

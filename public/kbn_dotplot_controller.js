@@ -18,11 +18,13 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
   $scope.$watchMulti(['esResponse', 'vis.params.perPage'], function ([resp]) {
 
     if(resp){
-      var id_firstfield = '0'
+      var id_firstfield = $scope.vis.aggs.bySchemaName['field'][0].id
       var id_secondfield;
-      var id_x = '1'
-      var id_y = '2'
-      var id_size = '3'
+      var id_x = $scope.vis.aggs.bySchemaName['x-axis'][0].id
+      var id_y = $scope.vis.aggs.bySchemaName['y-axis'][0].id
+      if($scope.vis.aggs.bySchemaName['dotsize']){
+        var id_size = $scope.vis.aggs.bySchemaName['dotsize'][0].id
+      }
       var dicColor = {}
       //Names of the field that have been selected
       var firstFieldAggId = $scope.vis.aggs.bySchemaName['field'][0].id;
@@ -30,10 +32,7 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         var fieldAggName = $scope.vis.aggs.bySchemaName['field'][0].params.field.displayName;
       }
       if($scope.vis.aggs.bySchemaName['field'][1]){
-        id_secondfield = '1'
-        id_x = '2'
-        id_y = '3'
-        id_size = '4'
+        id_secondfield =  $scope.vis.aggs.bySchemaName['field'][1].id;
         var secondFieldAggId = $scope.vis.aggs.bySchemaName['field'][1].id;
         if ($scope.vis.aggs.bySchemaName['field'][1].params.field) {
           var secondfieldAggName = $scope.vis.aggs.bySchemaName['field'][1].params.field.displayName;
@@ -66,8 +65,6 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         var radius_label = ""
         var metricsAgg_radius = $scope.vis.aggs.bySchemaName['dotsize'][0]
 
-        var radius_ratio = +metricsAgg_radius.vis.params.radiusRatio
-
         if(metricsAgg_radius.params.customLabel) {
           radius_label = metricsAgg_radius.params.customLabel
         } else {
@@ -83,11 +80,26 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         }
       }
 
+      // Get col ids
+      let col_id_firstfield, col_id_secondfield, col_id_x, col_id_y, col_id_size;
+      resp.columns.forEach(e => {
+        if (id_firstfield === e.aggConfig.id){
+          col_id_firstfield = e.id
+        }else if (id_secondfield === e.aggConfig.id){
+          col_id_secondfield = e.id
+        }else if (id_x === e.aggConfig.id){
+          col_id_x = e.id
+        }else if (id_y === e.aggConfig.id){
+          col_id_y = e.id
+        }else if (id_size === e.aggConfig.id){
+          col_id_size = e.id
+        }
+      });
 
       var defaultDotSize = 10
       // compite size for single bucket
       if(metricsAgg_radius) {
-        var firstBuketSized = resp.tables[0].rows.map(function (b) { return b[id_size] })
+        var firstBuketSized = resp.rows.map(function (b) { return b[col_id_size] })
         var max = Math.max(...firstBuketSized)
         var min = Math.min(...firstBuketSized)
         var chartMin = 10
@@ -96,29 +108,29 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         var chartDiff = chartMax - chartMin
       }
       console.log(resp)
-      var dataParsed = resp.tables[0].rows.map(function(bucket) {
+      var dataParsed = resp.rows.map(function(bucket) {
 
         //If two buckets selected
         if(secondFieldAggId){
           if (dicColor[bucket[id_firstfield]]){
-            var colorOrg = dicColor[bucket[id_firstfield]];
+            var colorOrg = dicColor[bucket[col_id_firstfield]];
           }else{
             var colorOrg = randomColor();
-            dicColor[bucket[id_firstfield]] = colorOrg;
+            dicColor[bucket[col_id_firstfield]] = colorOrg;
           }
 
 
           //Size
           var size = defaultDotSize
           if(metricsAgg_radius) {
-            size = ((bucket[id_size] - min) / step) * chartDiff + chartMin
+            size = ((bucket[col_id_size] - min) / step) * chartDiff + chartMin
           }
           return {
             mode: 'markers',
-            name: bucket[id_secondfield],
-            x: [bucket[id_x]],
-            y: [bucket[id_y]],
-            text: bucket[id_secondfield],
+            name: bucket[col_id_secondfield] + " - " + bucket[col_id_firstfield],
+            x: [bucket[col_id_x]],
+            y: [bucket[col_id_y]],
+            text: bucket[col_id_secondfield] + " - " + bucket[col_id_firstfield],
             marker: {
                 color: colorOrg,
                 sizemode: 'diameter',
@@ -129,14 +141,14 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         //If only one bucket selected
         var size = defaultDotSize
         if(metricsAgg_radius) {
-          size = ((bucket[id_size] - min) / step) * chartDiff + chartMin
+          size = ((bucket[col_id_size] - min) / step) * chartDiff + chartMin
         }
         return {
           mode: 'markers',
-          name: bucket[id_firstfield],
-          x: [bucket[id_x]],
-          y: [bucket[id_y]],
-          text: bucket[id_firstfield],
+          name: bucket[col_id_firstfield],
+          x: [bucket[col_id_x]],
+          y: [bucket[col_id_y]],
+          text: bucket[col_id_firstfield],
           marker: {
               sizemode: 'diameter',
               size: size,
