@@ -43,21 +43,30 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
       // Retrieve the metrics aggregation configured
       if($scope.vis.aggs.bySchemaName['x-axis']){
           var metricsAgg_xAxis = $scope.vis.aggs.bySchemaName['x-axis'][0];
-          if($scope.vis.aggs.bySchemaName['x-axis'][0].type.name != "count"){
-            var metricsAgg_xAxis_name = $scope.vis.aggs.bySchemaName['x-axis'][0].params.field.displayName;
-          }else{
-            var metricsAgg_xAxis_name = ""
+          if (metricsAgg_xAxis.params.customLabel) {
+            var metricsAgg_xAxis_title = metricsAgg_xAxis.params.customLabel
+          } else {
+            if($scope.vis.aggs.bySchemaName['x-axis'][0].type.name != "count"){
+              var metricsAgg_xAxis_name = $scope.vis.aggs.bySchemaName['x-axis'][0].params.field.displayName;
+            }else{
+              var metricsAgg_xAxis_name = ""
+            }
+            var metricsAgg_xAxis_title = $scope.vis.aggs.bySchemaName['x-axis'][0].type.title + " " +  metricsAgg_xAxis_name
           }
-          var metricsAgg_xAxis_title = $scope.vis.aggs.bySchemaName['x-axis'][0].type.title
+          
       }
       if($scope.vis.aggs.bySchemaName['y-axis']){
           var metricsAgg_yAxis = $scope.vis.aggs.bySchemaName['y-axis'][0];
-          if($scope.vis.aggs.bySchemaName['y-axis'][0].type.name != "count"){
-            var metricsAgg_yAxis_name = $scope.vis.aggs.bySchemaName['y-axis'][0].params.field.displayName;
-          }else{
-            var metricsAgg_yAxis_name = "";
+          if (metricsAgg_yAxis.params.customLabel) {
+            var metricsAgg_yAxis_title = metricsAgg_yAxis.params.customLabel
+          } else {
+            if($scope.vis.aggs.bySchemaName['y-axis'][0].type.name != "count"){
+              var metricsAgg_yAxis_name = $scope.vis.aggs.bySchemaName['y-axis'][0].params.field.displayName;
+            }else{
+              var metricsAgg_yAxis_name = "";
+            }
+            var metricsAgg_yAxis_title = $scope.vis.aggs.bySchemaName['y-axis'][0].type.title + " " + metricsAgg_yAxis_name
           }
-          var metricsAgg_yAxis_title = $scope.vis.aggs.bySchemaName['y-axis'][0].type.title
       }
 
       //Size
@@ -156,8 +165,8 @@ module.controller('KbnDotplotVisController', function ($scope, $element,  $timeo
         }
       });
       var layout = {
-        xaxis: {title: metricsAgg_xAxis_title + " " + metricsAgg_xAxis_name},
-        yaxis: {title: metricsAgg_yAxis_title + " " + metricsAgg_yAxis_name},//, type: 'log'},
+        xaxis: {title: metricsAgg_xAxis_title},
+        yaxis: {title: metricsAgg_yAxis_title},
         margin: {t: 20},
         hovermode: 'closest',
         showlegend: false,
