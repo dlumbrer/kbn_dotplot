@@ -1,16 +1,15 @@
 {
   "id": "kbnDotplot",
-  "version": "7.10.0",
+  "version": "1.0.0",
+  "opensearchDashboardsVersion": "opensearchDashboards",
   "server": false,
   "ui": true,
   "requiredPlugins": [
     "visualizations",
     "data",
     "inspector",
-    "kibanaLegacy"
-  ],
-  "requiredBundles": [
-    "kibanaUtils",
+    "opensearchDashboardsLegacy",
+    "opensearchDashboardsUtils",
     "visDefaultEditor",
     "share"
   ]

@@ -9,6 +9,11 @@
     "David Moreno Lumbreras <dmorenolumb@gmail.com>"
   ],
   "license": "Apache-2.0",
+  "scripts": {
+    "build": "yarn plugin-helpers build",
+    "plugin-helpers": "node ../../scripts/plugin_helpers",
+    "osd": "node ../../scripts/osd"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dlumbrer/kbn_dotplot"
